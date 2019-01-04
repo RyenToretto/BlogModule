@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>刮刮卡案例</title>
+        
+        <style type="text/css">
+            body {
+                width: 100%;
+                color: #000;
+                background: #96b377;
+                font: 14px Helvetica, Arial, sans-serif;
+            }
+            
+            #wrap {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+        </style>
+    </head>
+    
+    <body>
+        
+        
+        <div id="wrap"></div>
+        
+        
+        
+        
+        <!-- javascript 代码 -->
+        <script type="text/javascript">
+            //                创建 画布的width  画布的height  背景颜色 父元素
+            function createCanvasTo(canvasWidth, canvasHeight, bgColor, parentObj){
+                var myCanvas = document.createElement("canvas");
+                myCanvas.width = canvasWidth;
+                myCanvas.height = canvasHeight;
+                myCanvas.innerText = " 您的浏览器不支持 canvas，建议更新或者更换浏览器。";
+                if(bgColor){
+                    myCanvas.style.backgroundColor = bgColor;
+                };
+                if(parentObj){
+                    parentObj.appendChild(myCanvas);
+                };
+                
+                return myCanvas;
+            };
+            
+            /**** Start Coding ****/
+            var wrap = document.getElementById("wrap");
+            var myCanvas = createCanvasTo(400, 400, "yellow", wrap);
+            myCanvas.style.backgroundImage = "url(./img/Loki.jpg)";
+            myCanvas.style.backgroundSize = "cover";
+            
+            // 获取画笔
+            var pen = myCanvas.getContext("2d");
+            pen.fillStyle = 'blue';    // 填充的颜色
+            pen.strokeStyle = "red";    //  笔的颜色
+            pen.lineWidth = 40;    // 笔宽
+            pen.lineCap = "round";    // 圆形结束
+            pen.lineJoin = "round";    // 圆角
+            
+            // 开始绘制
+            pen.beginPath();
+            pen.fillRect(0, 0, myCanvas.width, myCanvas.height);
+            
+            pen.globalCompositeOperation = "destination-out";       // 只有源图像以外的目标图像显示，其他部分图像是透明的
+            
+            myCanvas.onmousedown = function(e){
+                e = e || window.event;
+                
+                myCanvas.setCapture && myCanvas.setCapture();
+                
+                var canvasX = myCanvas.getBoundingClientRect().left;
+                var canvasY = myCanvas.getBoundingClientRect().top;
+                
+                pen.beginPath();
+                pen.moveTo(e.clientX-canvasX, e.clientY-canvasY);
+                
+                myCanvas.onmousemove = function(e){
+                    e = e || window.event;
+                    
+                    pen.lineTo(e.clientX-canvasX, e.clientY-canvasY);
+                    pen.stroke();
+                };
+                
+                myCanvas.onmouseup = function(){
+                    
+                    myCanvas.onmousemove = null;
+                    myCanvas.onmouseup = null;
+                    myCanvas.clearCapture && myCanvas.clearCapture();
+                };
+                myCanvas.onmouseleave = myCanvas.onmouseup;
+                
+                e.preventDefault && e.preventDefault();
+                return false;
+            };
+        </script>
+    </body>
+</html>
